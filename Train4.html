@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeOS v5.1 - Final Build</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        :root { --bg-primary: #1a1b26; --bg-secondary: #24283b; --bg-tertiary: #414868; --text-primary: #c0caf5; --text-secondary: #a9b1d6; --accent-green: #9ece6a; --accent-cyan: #7dcfff; --accent-red: #f7768e; --accent-yellow: #e0af68; --accent-orange: #ff9e64; --font-body: 'Inter', sans-serif; --font-code: 'Fira Code', monospace; }
+        body { font-family: var(--font-body); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 20px 20px 20px; }
+        header { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid var(--bg-tertiary); padding-bottom: 1rem; }
+        header h1 { font-family: var(--font-code); color: var(--accent-cyan); font-size: 2.5rem; }
+        #current-date-header { font-family: var(--font-code); font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .stats-bar { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; font-family: var(--font-code); }
+        .stat { background-color: var(--bg-secondary); padding: 5px 15px; border-radius: 5px; border: 1px solid var(--bg-tertiary); }
+        .stat-value { font-weight: 700; color: var(--accent-green); }
+        nav#week-navigator { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        nav#week-navigator button, #go-to-today, #day-selector button { font-family: var(--font-body); font-weight: 600; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--bg-tertiary); padding: 10px 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s ease; }
+        nav#day-selector { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 2rem; }
+        #day-selector button { text-align: center; padding: 10px 5px; }
+        #day-selector button .day-date { font-size: 0.8em; }
+        #day-selector button.today { border-color: var(--accent-orange); }
+        nav button:hover, .info-button:hover { background-color: var(--bg-tertiary); }
+        #day-selector button.active { background-color: var(--accent-cyan); color: var(--bg-primary); border-color: var(--accent-cyan); }
+        .nav-text { font-family: var(--font-code); font-weight: 700; }
+        main#dashboard { background: var(--bg-secondary); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--bg-tertiary); }
+        .section-title { font-family: var(--font-code); font-size: 1.5rem; color: var(--accent-yellow); margin: 2rem 0 1rem 0; border-bottom: 1px dashed var(--bg-tertiary); padding-bottom: 0.5rem; }
+        .daily-signal { font-family: var(--font-code); background-color: var(--bg-primary); color: var(--accent-green); padding: 10px; border-radius: 5px; margin-bottom: 1.5rem; text-align: center; font-weight: 700; }
+        .protocol-list { list-style: none; padding-left: 5px; }
+        .protocol-list li { display: flex; align-items: flex-start; margin-bottom: 1rem; padding-left: 10px; }
+        .protocol-list li::before { content: '>>'; font-family: var(--font-code); color: var(--accent-cyan); margin-right: 10px; font-size: 1rem; }
+        input[type="checkbox"] { appearance: none; background-color: var(--bg-primary); margin-right: 15px; margin-top: 4px; font: inherit; color: var(--accent-green); width: 1.15em; height: 1.15em; border: 0.15em solid var(--bg-tertiary); border-radius: 0.15em; transform: translateY(-0.075em); display: grid; place-content: center; cursor: pointer; }
+        input[type="checkbox"]::before { content: ""; width: 0.65em; height: 0.65em; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em var(--accent-green); clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
+        input[type="checkbox"]:checked::before { transform: scale(1); }
+        .exercise-card { background-color: var(--bg-primary); border-radius: 5px; border-left: 4px solid var(--accent-cyan); padding: 15px; margin-top: 1rem; }
+        .exercise-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .exercise-name { font-size: 1.25rem; font-weight: 700; }
+        .info-button { display: inline-block; cursor: pointer; color: var(--accent-cyan); background-color: var(--bg-tertiary); border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px; font-weight: 700; margin-left: 8px; user-select: none; }
+        .exercise-details { font-family: var(--font-code); font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--bg-tertiary); }
+        .exercise-method { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--bg-tertiary); font-style: italic; }
+        .input-log-area { display: grid; grid-template-columns: 1fr 100px; gap: 8px; margin-top: 1rem; }
+        .input-log-area input { background: var(--bg-secondary); border: 1px solid var(--bg-tertiary); color: var(--text-primary); padding: 8px; border-radius: 4px; font-family: var(--font-code); }
+        .previous-log { font-family: var(--font-code); font-size: 0.8rem; color: var(--accent-yellow); margin-top: 5px; padding: 5px; background-color: #31355222; border-radius: 4px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); }
+        .modal-content { background-color: var(--bg-secondary); color: var(--text-primary); margin: 10% auto; padding: 25px; border: 1px solid var(--bg-tertiary); width: 80%; max-width: 600px; border-radius: 8px; }
+        #feedback-section { background-color: var(--bg-primary); border-left: 4px solid var(--accent-orange); padding: 15px; margin-top: 1.5rem; border-radius: 5px; }
+        #feedback-title { color: var(--accent-orange); font-family: var(--font-code); font-size: 1.1rem; margin-bottom: 0.5rem; }
+        #feedback-content ul { list-style: none; }
+        #feedback-content li { margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;}
+        #feedback-content li::before { content: '›'; position: absolute; left: 0; top: 0; color: var(--accent-orange); font-weight: 700; font-size: 1.2rem;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><h1>LifeOS v5.1</h1><div id="current-date-header"></div><div class="stats-bar"><div class="stat">Racha: <span id="streak-counter" class="stat-value">0</span> Días 🔥</div></div></header>
+        <nav id="week-navigator"><button id="prev-week">‹‹ Semana Anterior</button><span id="week-range" class="nav-text"></span><button id="next-week">Semana Siguiente ››</button></nav>
+        <div style="text-align:center; margin-bottom:1rem;"><button id="go-to-today">Ir a Hoy</button></div>
+        <nav id="day-selector"></nav>
+        <main id="dashboard"></main>
+    </div>
+    <div id="info-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title"></h2><span class="close-button">×</span></div><p id="modal-text"></p></div></div>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- [ CORE SYSTEM CONFIGURATION ] ---
+    const CONFIG = { STORAGE_KEY_DATA: 'lifeOS_Data_v5.1', STORAGE_KEY_STREAK: 'lifeOS_Streak_v5.1', MOCK_DATE: new Date('2025-07-29T10:00:00') };
+    const KNOWLEDGE_BASE = { 'RIR':{t:"RIR",txt:"Reps que podrías haber hecho ANTES del fallo técnico. RIR 1-2 es óptimo para la tensión mecánica sin fatiga excesiva del SNC."},'DROP_SET':{t:"Drop Set",txt:"Fallas, reduces peso, fallas de nuevo. Pico de HGH por estrés metabólico."},'REST_PAUSE':{t:"Rest-Pause",txt:"Fallas, descansas 15s, fallas de nuevo. Brutal para acumulación de metabolitos." },'CARGA_AXIAL':{t:"Carga Axial",txt:"Fuerza que comprime el esqueleto. Señal biomecánica clave (Ley de Wolff) para que los huesos aumenten su densidad."} };
+    const WEEKLY_PROTOCOLS = {Monday:{s:"Tensión Mecánica",e:[{n:"Sentadillas",t:"CARGA_AXIAL",sets:4,r:"5-8",m:"RIR 1-2"},{n:"Press Banca",t:"RIR",sets:4,r:"6-10",m:"RIR 1-2"},{n:"Fondos",t:"RIR",sets:3,r:"AMRAP",m:"Última serie AL FALLO"},{n:"Elev. Laterales",t:"DROP_SET",s:3,r:"12-15",m:"Última en DROP SET"}]},Tuesday:{s:"Estrés Metabólico/HGH",e:[{n:"Sprints Cuerda",sets:10,r:"30s/60s",m:"Máx esfuerzo"},{n:"Circ. Pliométrico",s:4,r:"N/A",m:"Burpees-Saltos-Escaladores"}]},Wednesday:{s:"Tensión Mecánica/Posterior",e:[{n:"Peso Muerto",t:"CARGA_AXIAL",s:3,r:"3-5",m:"RIR 1"},{n:"Dominadas",t:"RIR",s:4,r:"8-12",m:"RIR 1-2"},{n:"Remo c/Barra",t:"RIR",s:3,r:"8-10",m:"RIR 1-2"},{n:"Curl Bíceps",t:"REST_PAUSE",s:3,r:"10-12",m:"Última en REST-PAUSE"}]},Thursday:{s:"Recuperación Activa",tsks:["Caminata 45-60m","Movilidad Profunda"]},Friday:{s:"Potencia y Fatiga Sistémica",e:[{n:"Push Press",t:"CARGA_AXIAL",s:5,r:"5",m:"RIR 1-2"},{n:"Circ. Potencia",s:4,r:"N/A",m:"Goblet-Remo-Flexiones"},{n:"Caminata Granjero",s:3,r:"Max Dist",m:"Agarre brutal"}]},Saturday:{s:"Actividad Recreativa",tsks:["Deporte","Estiramientos"]},Sunday:{s:"Anabolismo y Recarga",tsks:["DESCANSO TOTAL","Sueño Prioritario"]} };
+    
+    const REAL_TODAY = new Date();
+    let currentDateInView = CONFIG.MOCK_DATE || new Date(REAL_TODAY);
+    let selectedDate = new Date(currentDateInView);
+
+    const getData = () => JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_DATA)) || {};
+    const saveData = (data) => localStorage.setItem(CONFIG.STORAGE_KEY_DATA, JSON.stringify(data));
+    const toISODateString = date => new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString().split('T')[0];
+    const parseLog = (str) => { const m = (str || "").match(/(\d+\.?\d*)\s*[xX]\s*(\d+)/); return m ? { weight: parseFloat(m[1]), reps: parseInt(m[2]) } : { weight: 0, reps: 0 }; };
+
+    function updateStreak() {
+        let streakData = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_STREAK)) || { count: 0, lastDate: null };
+        const todayStr = toISODateString(REAL_TODAY);
+        if (streakData.lastDate === todayStr) return;
+
+        const yesterday = new Date(REAL_TODAY);
+        yesterday.setDate(REAL_TODAY.getDate() - 1);
+        const yesterdayStr = toISODateString(yesterday);
+        
+        streakData.count = (streakData.lastDate === yesterdayStr) ? streakData.count + 1 : 1;
+        streakData.lastDate = todayStr;
+        localStorage.setItem(CONFIG.STORAGE_KEY_STREAK, JSON.stringify(streakData));
+        document.getElementById('streak-counter').textContent = streakData.count;
+    }
+    
+    function generateFeedback(dateStr) {
+        const allData = getData();
+        const dayData = allData[dateStr] || {};
+        const notes = dayData.notes || "";
+        let feedback = [];
+        
+        if (/dormí mal|cansado|fatiga/i.test(notes)) feedback.push(`Análisis de Recuperación: Detectada fatiga. El sueño es anabólico. Si esto persiste, considera un día de descanso extra. El crecimiento ocurre durante el descanso.`);
+        else if (/fuerte|energía|bien/i.test(notes)) feedback.push(`Análisis de Estado: Reportas alta energía. Excelente. Tu sistema está preparado para la sobrecarga progresiva. ¡Ataca!`);
+        
+        const dayName = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' });
+        const protocol = WEEKLY_PROTOCOLS[dayName];
+        if (protocol && protocol.e) {
+            protocol.e.forEach((ex, i) => {
+                let currentVolume = 0;
+                for (let s = 1; s <= ex.s; s++) { const { weight, reps } = parseLog(dayData[`ex${i}-log-set${s}`]); currentVolume += weight * reps; }
+                
+                const prevWeekDateStr = toISODateString(new Date(new Date(dateStr).getTime() - 7 * 24 * 60 * 60 * 1000));
+                const prevWeekData = allData[prevWeekDateStr] || {};
+                let previousVolume = 0;
+                for (let s = 1; s <= ex.s; s++) { const { weight, reps } = parseLog(prevWeekData[`ex${i}-log-set${s}`]); previousVolume += weight * reps; }
+
+                if (currentVolume > 0 && currentVolume > previousVolume) {
+                    const increase = previousVolume > 0 ? Math.round(((currentVolume - previousVolume) / previousVolume) * 100) : 100;
+                    feedback.push(`Análisis de Volumen (${ex.n}): <span style="color:var(--accent-green)">¡Progreso! (+${increase}%)</span> Este es el motor del crecimiento.`);
+                }
+            });
+        }
+        
+        const feedbackEl = document.getElementById('feedback-content');
+        if (feedbackEl) feedbackEl.innerHTML = feedback.length > 0 ? `<ul>${feedback.map(f => `<li>${f}</li>`).join('')}</ul>` : "Introduce logs y notas para activar el análisis del Asesor...";
+    }
+
+    function renderWeekNavigator(centerDate) {
+        const daySelector = document.getElementById('day-selector');
+        daySelector.innerHTML = '';
+        const startOfWeek = new Date(centerDate);
+        startOfWeek.setDate(centerDate.getDate() - centerDate.getDay()); // Sunday start
+        
+        const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        document.getElementById('week-range').textContent = `Semana del ${startOfWeek.getDate()} de ${monthNames[startOfWeek.getMonth()]}`;
+
+        const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(startOfWeek);
+            day.setDate(startOfWeek.getDate() + i);
+            const button = document.createElement('button');
+            button.dataset.date = toISODateString(day);
+            button.innerHTML = `${days[i]} <br> <span class="day-date">${day.getDate()}</span>`;
+            if(toISODateString(day) === toISODateString(selectedDate)) button.classList.add('active');
+            if(toISODateString(day) === toISODateString(REAL_TODAY)) button.classList.add('today');
+            daySelector.appendChild(button);
+        }
+    }
+    
+    function displayDay(date) {
+        selectedDate = date;
+        const dateStr = toISODateString(date);
+        const dayName = new Date(date).toLocaleDateString('en-US', {weekday: 'long'});
+        const protocol = WEEKLY_PROTOCOLS[dayName];
+        
+        dashboard.innerHTML = `<div class="daily-signal">${protocol.s}</div><div id="protocol-container"></div>
+            <div id="feedback-wrapper" style="display:none;"><h2 class="section-title">REGISTRO Y ANÁLISIS DIARIO</h2>
+            <textarea id="daily-notes" placeholder="Notas: sensaciones, energía, sueño (1-10), etc..."></textarea>
+            <div id="feedback-section"><h3 id="feedback-title">ASESOR FISIOLÓGICO</h3><div id="feedback-content"></div></div></div>`;
+        
+        const protocolContainer = document.getElementById('protocol-container');
+        const allData = getData();
+        const dayData = allData[dateStr] || {};
+        
+        if (protocol.tsks) {
+            let taskHTML = '<ul class="protocol-list">';
+            protocol.tsks.forEach((task, i) => { const id = `task${i}`; taskHTML += `<li><input type="checkbox" data-id="${id}" ${dayData[id]?'checked':''}> <p>${task}</p></li>`; });
+            protocolContainer.innerHTML = taskHTML + '</ul>';
+        }
+
+        if (protocol.e) {
+            document.getElementById('feedback-wrapper').style.display = 'block';
+            const prevWeekDateStr = toISODateString(new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000));
+            const prevWeekData = allData[prevWeekDateStr] || {};
+            
+            protocol.e.forEach((ex, i) => {
+                const prevLog = prevWeekData[`ex${i}-log-set1`] || "Sin datos previos.";
+                let logInputsHTML = '';
+                for (let s = 1; s <= ex.s; s++) { logInputsHTML += `<input type="text" placeholder="Set ${s}: peso x reps" data-id="ex${i}-log-set${s}"><input type="text" placeholder="RIR" data-id="ex${i}-log-rir${s}" style="width: 80px;">`; }
+                
+                const card = document.createElement('div'); card.className = 'exercise-card';
+                card.innerHTML = `<div class="exercise-header"><span class="exercise-name">${ex.n}</span><span class="info-button" data-term="${ex.t||''}" style="display:${ex.t?'inline-block':'none'};">i</span></div>
+                    <div class="exercise-details"><span>SETS: ${ex.s}</span><span>REPS: ${ex.r}</span><span>REST: ${ex.rest||'N/A'}</span></div><div class="exercise-method">${ex.m}</div>
+                    <div class="previous-log">Semana Anterior: ${prevLog}</div><div class="input-log-area">${logInputsHTML}</div>`;
+                protocolContainer.appendChild(card);
+            });
+            document.getElementById('daily-notes').dataset.id = 'notes';
+        }
+
+        document.querySelectorAll(`[data-id]`).forEach(el => { if (dayData[el.dataset.id] !== undefined) { el.type === 'checkbox' ? el.checked = dayData[el.dataset.id] : el.value = dayData[el.dataset.id]; }});
+        if(document.getElementById('feedback-wrapper')) generateFeedback(dateStr);
+        renderWeekNavigator(currentDateInView);
+    }
+    
+    function saveDataHandler(event) {
+        const allData = getData();
+        const dateStr = toISODateString(selectedDate);
+        if (!allData[dateStr]) allData[dateStr] = {};
+        
+        const id = event.target.dataset.id;
+        if(id) {
+            allData[dateStr][id] = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+            saveData(allData);
+            if(document.getElementById('feedback-wrapper')) generateFeedback(dateStr);
+            if (id === 'notes' && event.target.value.trim() !== '' && dateStr === toISODateString(REAL_TODAY)) updateStreak();
+        }
+    }
+    
+    function init() {
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date-header').textContent = REAL_TODAY.toLocaleDateString('es-ES', dateOptions);
+        document.getElementById('streak-counter').textContent = (JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_STREAK)) || { count: 0 }).count;
+
+        displayDay(selectedDate);
+        
+        document.getElementById('day-selector').addEventListener('click', e => { const btn = e.target.closest('button'); if(btn && btn.dataset.date) displayDay(new Date(btn.dataset.date + 'T00:00:00')); });
+        document.getElementById('prev-week').addEventListener('click', () => { currentDateInView.setDate(currentDateInView.getDate() - 7); renderWeekNavigator(currentDateInView); });
+        document.getElementById('next-week').addEventListener('click', () => { currentDateInView.setDate(currentDateInView.getDate() + 7); renderWeekNavigator(currentDateInView); });
+        document.getElementById('go-to-today').addEventListener('click', () => { currentDateInView = new Date(REAL_TODAY); displayDay(currentDateInView); });
+        dashboard.addEventListener('input', saveDataHandler);
+
+        const modal = document.getElementById('info-modal');
+        modal.addEventListener('click', e => { if (e.target.id === 'info-modal' || e.target.classList.contains('close-button')) modal.style.display = 'none'; });
+        dashboard.addEventListener('click', e => { if (e.target.classList.contains('info-button')) { const data = KNOWLEDGE_BASE[e.target.dataset.term]; if(data){ modal.querySelector('.modal-title').textContent = data.t; modal.querySelector('#modal-text').textContent = data.txt; modal.style.display="block"; } } });
+    }
+    
+    init();
+});
+</script>
+</body>
+</html>
