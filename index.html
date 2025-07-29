@@ -3,227 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifeOS v5.1 - Final Build</title>
+    <title>LifeOS v9.5 - Final Working Build</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;600;700&display=swap');
         :root { --bg-primary: #1a1b26; --bg-secondary: #24283b; --bg-tertiary: #414868; --text-primary: #c0caf5; --text-secondary: #a9b1d6; --accent-green: #9ece6a; --accent-cyan: #7dcfff; --accent-red: #f7768e; --accent-yellow: #e0af68; --accent-orange: #ff9e64; --font-body: 'Inter', sans-serif; --font-code: 'Fira Code', monospace; }
-        body { font-family: var(--font-body); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; }
-        .container { max-width: 900px; margin: 20px auto; padding: 0 20px 20px 20px; }
-        header { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid var(--bg-tertiary); padding-bottom: 1rem; }
+        body { font-family: var(--font-body); background-color: var(--bg-primary); color: var(--text-primary); }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 20px 20px; }
+        header { text-align: center; margin-bottom: 2rem; }
         header h1 { font-family: var(--font-code); color: var(--accent-cyan); font-size: 2.5rem; }
-        #current-date-header { font-family: var(--font-code); font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem; }
-        .stats-bar { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; font-family: var(--font-code); }
-        .stat { background-color: var(--bg-secondary); padding: 5px 15px; border-radius: 5px; border: 1px solid var(--bg-tertiary); }
-        .stat-value { font-weight: 700; color: var(--accent-green); }
-        nav#week-navigator { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        nav#week-navigator button, #go-to-today, #day-selector button { font-family: var(--font-body); font-weight: 600; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--bg-tertiary); padding: 10px 15px; border-radius: 5px; cursor: pointer; transition: all 0.2s ease; }
-        nav#day-selector { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 2rem; }
-        #day-selector button { text-align: center; padding: 10px 5px; }
-        #day-selector button .day-date { font-size: 0.8em; }
-        #day-selector button.today { border-color: var(--accent-orange); }
-        nav button:hover, .info-button:hover { background-color: var(--bg-tertiary); }
-        #day-selector button.active { background-color: var(--accent-cyan); color: var(--bg-primary); border-color: var(--accent-cyan); }
-        .nav-text { font-family: var(--font-code); font-weight: 700; }
-        main#dashboard { background: var(--bg-secondary); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--bg-tertiary); }
-        .section-title { font-family: var(--font-code); font-size: 1.5rem; color: var(--accent-yellow); margin: 2rem 0 1rem 0; border-bottom: 1px dashed var(--bg-tertiary); padding-bottom: 0.5rem; }
-        .daily-signal { font-family: var(--font-code); background-color: var(--bg-primary); color: var(--accent-green); padding: 10px; border-radius: 5px; margin-bottom: 1.5rem; text-align: center; font-weight: 700; }
-        .protocol-list { list-style: none; padding-left: 5px; }
-        .protocol-list li { display: flex; align-items: flex-start; margin-bottom: 1rem; padding-left: 10px; }
-        .protocol-list li::before { content: '>>'; font-family: var(--font-code); color: var(--accent-cyan); margin-right: 10px; font-size: 1rem; }
-        input[type="checkbox"] { appearance: none; background-color: var(--bg-primary); margin-right: 15px; margin-top: 4px; font: inherit; color: var(--accent-green); width: 1.15em; height: 1.15em; border: 0.15em solid var(--bg-tertiary); border-radius: 0.15em; transform: translateY(-0.075em); display: grid; place-content: center; cursor: pointer; }
-        input[type="checkbox"]::before { content: ""; width: 0.65em; height: 0.65em; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em var(--accent-green); clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); }
-        input[type="checkbox"]:checked::before { transform: scale(1); }
-        .exercise-card { background-color: var(--bg-primary); border-radius: 5px; border-left: 4px solid var(--accent-cyan); padding: 15px; margin-top: 1rem; }
-        .exercise-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        nav#mode-selector { margin-top:1rem; display: flex; justify-content: center; gap: 1rem; border-top: 1px solid var(--bg-tertiary); border-bottom: 1px solid var(--bg-tertiary); padding: 1rem 0; }
+        .mode-button, .action-button { font-family: var(--font-body); font-weight: 600; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--bg-tertiary); padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: all 0.2s ease; }
+        .mode-button.active, .action-button:hover { background-color: var(--accent-orange); color: var(--bg-primary); border-color: var(--accent-orange); }
+        main#main-content { min-height: 200px; }
+        #routine-editor { display: none; padding: 1.5rem; background-color: var(--bg-secondary); border-radius: 8px; margin-top: 1.5rem;}
+        .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .editor-day-btn { padding: 8px 12px; background-color: var(--bg-primary); }
+        .editor-day-btn.active { background-color: var(--accent-cyan); color: var(--bg-primary); }
+        #exercise-search-input { width: 100%; padding: 12px; background-color: var(--bg-primary); border: 1px solid var(--bg-tertiary); border-radius: 5px; color: var(--text-primary); font-size: 1rem; margin: 1rem 0 0.5rem 0; }
+        #suggestions-box { max-height: 200px; overflow-y: auto; border: 1px solid var(--bg-tertiary); border-radius: 5px; }
+        .suggestion-item { padding: 10px; cursor: pointer; }
+        .suggestion-item:hover { background-color: var(--bg-tertiary); }
+        .custom-exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: var(--bg-primary); border-radius: 5px; margin-bottom: 5px; border-left: 3px solid var(--accent-green);}
+        .delete-exercise-btn { color: var(--accent-red); cursor: pointer; font-weight: 700; border: none; background: none; font-size: 1.2rem; }
+        .log-series-container { display: flex; flex-direction: column; gap: 1rem; padding-top: 1rem; }
+        .log-series { display: grid; grid-template-columns: 20px 1fr auto 1fr auto; align-items: center; gap: 10px; background-color: var(--bg-primary); padding: 8px; border-radius: 5px;}
+        .series-number { font-family: var(--font-code); text-align: center;}
+        .slider-group input[type=range] { width: 100%; }
+        .slider-value { font-family: var(--font-code); background-color: var(--bg-secondary); width: 60px; text-align: center; border-radius: 4px; padding: 5px; }
+        .biomech-feedback { margin-top: 1rem; padding: 15px; background-color: var(--bg-primary); border-left: 3px solid var(--accent-orange); border-radius: 5px; font-size: 0.9rem;}
+        .section-title { font-family: var(--font-code); font-size: 1.5rem; color: var(--accent-yellow); margin-top: 2rem;}
+        .exercise-card { background-color: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--accent-cyan); padding: 15px; margin-top: 1.5rem; }
         .exercise-name { font-size: 1.25rem; font-weight: 700; }
-        .info-button { display: inline-block; cursor: pointer; color: var(--accent-cyan); background-color: var(--bg-tertiary); border-radius: 50%; width: 20px; height: 20px; text-align: center; line-height: 20px; font-weight: 700; margin-left: 8px; user-select: none; }
-        .exercise-details { font-family: var(--font-code); font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--bg-tertiary); }
-        .exercise-method { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--bg-tertiary); font-style: italic; }
-        .input-log-area { display: grid; grid-template-columns: 1fr 100px; gap: 8px; margin-top: 1rem; }
-        .input-log-area input { background: var(--bg-secondary); border: 1px solid var(--bg-tertiary); color: var(--text-primary); padding: 8px; border-radius: 4px; font-family: var(--font-code); }
-        .previous-log { font-family: var(--font-code); font-size: 0.8rem; color: var(--accent-yellow); margin-top: 5px; padding: 5px; background-color: #31355222; border-radius: 4px; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); }
-        .modal-content { background-color: var(--bg-secondary); color: var(--text-primary); margin: 10% auto; padding: 25px; border: 1px solid var(--bg-tertiary); width: 80%; max-width: 600px; border-radius: 8px; }
-        #feedback-section { background-color: var(--bg-primary); border-left: 4px solid var(--accent-orange); padding: 15px; margin-top: 1.5rem; border-radius: 5px; }
-        #feedback-title { color: var(--accent-orange); font-family: var(--font-code); font-size: 1.1rem; margin-bottom: 0.5rem; }
-        #feedback-content ul { list-style: none; }
-        #feedback-content li { margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;}
-        #feedback-content li::before { content: '›'; position: absolute; left: 0; top: 0; color: var(--accent-orange); font-weight: 700; font-size: 1.2rem;}
+        strong { color: var(--accent-cyan); }
     </style>
 </head>
 <body>
     <div class="container">
-        <header><h1>LifeOS v5.1</h1><div id="current-date-header"></div><div class="stats-bar"><div class="stat">Racha: <span id="streak-counter" class="stat-value">0</span> Días 🔥</div></div></header>
-        <nav id="week-navigator"><button id="prev-week">‹‹ Semana Anterior</button><span id="week-range" class="nav-text"></span><button id="next-week">Semana Siguiente ››</button></nav>
-        <div style="text-align:center; margin-bottom:1rem;"><button id="go-to-today">Ir a Hoy</button></div>
-        <nav id="day-selector"></nav>
-        <main id="dashboard"></main>
+        <header>
+            <h1>LifeOS v9.5</h1>
+            <nav id="mode-selector">
+                <button id="btn-standard-mode" class="mode-button">Modo Estándar</button>
+                <button id="btn-custom-mode" class="mode-button">Modo Personalizado</button>
+            </nav>
+        </header>
+        <main id="main-content"></main>
+        <section id="routine-editor"></section>
     </div>
-    <div id="info-modal" class="modal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title"></h2><span class="close-button">×</span></div><p id="modal-text"></p></div></div>
-    <script>
+
+<script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- [ CORE SYSTEM CONFIGURATION ] ---
-    const CONFIG = { STORAGE_KEY_DATA: 'lifeOS_Data_v5.1', STORAGE_KEY_STREAK: 'lifeOS_Streak_v5.1', MOCK_DATE: new Date('2025-07-29T10:00:00') };
-    const KNOWLEDGE_BASE = { 'RIR':{t:"RIR",txt:"Reps que podrías haber hecho ANTES del fallo técnico. RIR 1-2 es óptimo para la tensión mecánica sin fatiga excesiva del SNC."},'DROP_SET':{t:"Drop Set",txt:"Fallas, reduces peso, fallas de nuevo. Pico de HGH por estrés metabólico."},'REST_PAUSE':{t:"Rest-Pause",txt:"Fallas, descansas 15s, fallas de nuevo. Brutal para acumulación de metabolitos." },'CARGA_AXIAL':{t:"Carga Axial",txt:"Fuerza que comprime el esqueleto. Señal biomecánica clave (Ley de Wolff) para que los huesos aumenten su densidad."} };
-    const WEEKLY_PROTOCOLS = {Monday:{s:"Tensión Mecánica",e:[{n:"Sentadillas",t:"CARGA_AXIAL",sets:4,r:"5-8",m:"RIR 1-2"},{n:"Press Banca",t:"RIR",sets:4,r:"6-10",m:"RIR 1-2"},{n:"Fondos",t:"RIR",sets:3,r:"AMRAP",m:"Última serie AL FALLO"},{n:"Elev. Laterales",t:"DROP_SET",s:3,r:"12-15",m:"Última en DROP SET"}]},Tuesday:{s:"Estrés Metabólico/HGH",e:[{n:"Sprints Cuerda",sets:10,r:"30s/60s",m:"Máx esfuerzo"},{n:"Circ. Pliométrico",s:4,r:"N/A",m:"Burpees-Saltos-Escaladores"}]},Wednesday:{s:"Tensión Mecánica/Posterior",e:[{n:"Peso Muerto",t:"CARGA_AXIAL",s:3,r:"3-5",m:"RIR 1"},{n:"Dominadas",t:"RIR",s:4,r:"8-12",m:"RIR 1-2"},{n:"Remo c/Barra",t:"RIR",s:3,r:"8-10",m:"RIR 1-2"},{n:"Curl Bíceps",t:"REST_PAUSE",s:3,r:"10-12",m:"Última en REST-PAUSE"}]},Thursday:{s:"Recuperación Activa",tsks:["Caminata 45-60m","Movilidad Profunda"]},Friday:{s:"Potencia y Fatiga Sistémica",e:[{n:"Push Press",t:"CARGA_AXIAL",s:5,r:"5",m:"RIR 1-2"},{n:"Circ. Potencia",s:4,r:"N/A",m:"Goblet-Remo-Flexiones"},{n:"Caminata Granjero",s:3,r:"Max Dist",m:"Agarre brutal"}]},Saturday:{s:"Actividad Recreativa",tsks:["Deporte","Estiramientos"]},Sunday:{s:"Anabolismo y Recarga",tsks:["DESCANSO TOTAL","Sueño Prioritario"]} };
+    // --- [ CORE SYSTEM ] ---
+    const CONFIG = { STORAGE_KEY_CUSTOM_ROUTINE: 'lifeOS_CustomRoutine_v9.5', STORAGE_KEY_MODE: 'lifeOS_Mode_v9.5', STORAGE_KEY_LOGS: 'lifeOS_Logs_v9.5' };
     
-    const REAL_TODAY = new Date();
-    let currentDateInView = CONFIG.MOCK_DATE || new Date(REAL_TODAY);
-    let selectedDate = new Date(currentDateInView);
+    const BIOMECH_DB = {
+    // ==========================================================
+    // GRUPO 1: PECTORALES
+    // Fuente: Enciclopedia de Musculación, Óscar Morán, pp. 34-69
+    // ==========================================================
 
-    const getData = () => JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_DATA)) || {};
-    const saveData = (data) => localStorage.setItem(CONFIG.STORAGE_KEY_DATA, JSON.stringify(data));
-    const toISODateString = date => new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString().split('T')[0];
-    const parseLog = (str) => { const m = (str || "").match(/(\d+\.?\d*)\s*[xX]\s*(\d+)/); return m ? { weight: parseFloat(m[1]), reps: parseInt(m[2]) } : { weight: 0, reps: 0 }; };
+    pressBancaBarra: {
+        nc: "Press de Banca con Barra",
+        tm: "Empuje Horizontal",
+        mp: ["Pectoral Mayor", "Tríceps Braquial", "Deltoides Anterior"],
+        ms: ["Coracobraquial", "Serrato Anterior", "Subescapular"],
+        ab: "Movimiento fundamental para el desarrollo de fuerza y masa en los músculos de empuje del torso. La acción principal es una aducción horizontal del húmero combinada con una extensión del codo.",
+        pct: "Mantener los pies firmes en el suelo, la espalda apoyada, y realizar un descenso controlado hasta el pecho antes de empujar la barra verticalmente.",
+        rc: "Rebotar la barra en el pecho, lo cual utiliza inercia y no tensión muscular, además de aumentar el riesgo de lesión.",
+        key: "pressBancaBarra"
+    },
+    pressInclinadoBarra: {
+        nc: "Press de Banca Inclinado con Barra",
+        tm: "Empuje Inclinado",
+        mp: ["Pectoral Mayor (porción clavicular)", "Deltoides Anterior"],
+        ms: ["Tríceps Braquial", "Serrato Anterior"],
+        ab: "Enfocado en desarrollar la parte superior (clavicular) del pectoral, crucial para una apariencia completa. La inclinación (30-45º) cambia el ángulo de empuje.",
+        pct: "No uses una inclinación excesiva (más de 45º) para evitar que el deltoides anterior domine el movimiento. El recorrido termina sobre la vertical de los ojos.",
+        rc: "Arquear excesivamente la espalda baja, anulando el propósito de la inclinación del banco.",
+        key: "pressInclinadoBarra"
+    },
+    pressDeclinadoBarra: {
+        nc: "Press de Banca Declinado con Barra",
+        tm: "Empuje Declinado",
+        mp: ["Pectoral Mayor (porción inferior)", "Tríceps Braquial"],
+        ms: ["Deltoides Anterior"],
+        ab: "Aísla la porción inferior del pectoral. A menudo permite levantar más peso debido a un rango de movimiento más corto y una línea de empuje favorable.",
+        pct: "Controla el descenso. La posición invertida puede causar mareos si no se está acostumbrado; pide siempre ayuda.",
+        rc: "Bajar la barra demasiado alto en el pecho en lugar de hacia la parte inferior del esternón.",
+        key: "pressDeclinadoBarra"
+    },
+    aperturasMancuernas: {
+        nc: "Aperturas con Mancuernas",
+        tm: "Aislamiento/Aducción Horizontal",
+        mp: ["Pectoral Mayor"],
+        ms: ["Deltoides Anterior", "Bíceps (cabeza corta)"],
+        ab: "Ejercicio de aislamiento diseñado para estirar las fibras del pectoral bajo carga, promoviendo hipertrofia a través de un rango de movimiento máximo.",
+        pct: "Mantén una ligera y constante flexión en los codos durante todo el movimiento, como si estuvieras 'abrazando un árbol'.",
+        rc: "Flexionar excesivamente los codos en la bajada, convirtiendo el movimiento en un press y reduciendo la tensión en el pectoral.",
+        key: "aperturasMancuernas"
+    },
+    fondosParalelas: {
+        nc: "Fondos en Paralelas (para Pecho)",
+        tm: "Empuje Declinado (Peso Corporal)",
+        mp: ["Pectoral Mayor (inferior)", "Tríceps", "Deltoides Anterior"],
+        ms: ["Serrato Anterior"],
+        ab: "Excelente constructor de masa para la parte inferior del pecho y tríceps usando el peso corporal. La inclinación del torso es clave.",
+        pct: "Inclina el torso hacia adelante (~45 grados) y mantén los codos ligeramente abiertos para maximizar el énfasis en el pectoral.",
+        rc: "Mantener el torso vertical (lo que lo convierte en un ejercicio dominante de tríceps) o un recorrido demasiado corto.",
+        key: "fondosParalelas"
+    },
 
-    function updateStreak() {
-        let streakData = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_STREAK)) || { count: 0, lastDate: null };
-        const todayStr = toISODateString(REAL_TODAY);
-        if (streakData.lastDate === todayStr) return;
+    // ==========================================================
+    // GRUPO 2: DORSALES
+    // Fuente: Enciclopedia de Musculación, Óscar Morán, pp. 70-103
+    // ==========================================================
 
-        const yesterday = new Date(REAL_TODAY);
-        yesterday.setDate(REAL_TODAY.getDate() - 1);
-        const yesterdayStr = toISODateString(yesterday);
+    dominadas: {
+        nc: "Dominadas (Agarre Prono)",
+        tm: "Tracción Vertical",
+        mp: ["Dorsal Ancho", "Redondo Mayor"],
+        ms: ["Bíceps Braquial", "Romboides", "Trapecio Inferior"],
+        ab: "El ejercicio rey para desarrollar la amplitud ('espalda en V'). Mide la fuerza relativa y es un movimiento fundamental del ser humano.",
+        pct: "Inicia el movimiento deprimiendo las escápulas (bajando los hombros), no simplemente tirando con los brazos. Lleva el pecho a la barra.",
+        rc: "Usar 'kipping' (balanceo corporal) en lugar de fuerza muscular o no completar el rango de movimiento completo.",
+        key: "dominadas"
+    },
+    remoBarra: {
+        nc: "Remo con Barra (Pendlay/Bent-Over)",
+        tm: "Tracción Horizontal",
+        mp: ["Dorsales", "Romboides", "Trapecios (medio e inferior)"],
+        ms: ["Deltoides Posterior", "Bíceps", "Erectores Espinales (isométrico)"],
+        ab: "Constructor de densidad y grosor para toda la espalda. Requiere una técnica estricta para proteger la zona lumbar.",
+        pct: "Mantén la espalda recta como una tabla en un ángulo de 45-90 grados. Tira la barra hacia la parte baja del abdomen/ombligo.",
+        rc: "Elevar el torso en cada repetición para usar impulso y redondear la espalda baja, poniendo en riesgo los discos intervertebrales.",
+        key: "remoBarra"
+    },
+    remoMancuerna: {
+        nc: "Remo con Mancuerna (a una mano)",
+        tm: "Tracción Horizontal Unilateral",
+        mp: ["Dorsal Ancho", "Romboides"],
+        ms: ["Trapecio", "Bíceps", "Deltoides Posterior"],
+        ab: "Permite un rango de movimiento mayor que el remo con barra y un enfoque unilateral, ideal para corregir desbalances de fuerza. Menor estrés lumbar.",
+        pct: "Mantén el torso paralelo al suelo y la espalda recta. Tira de la mancuerna hacia la cadera, no hacia el hombro, para una mejor contracción del dorsal.",
+        rc: "Girar el torso excesivamente al levantar el peso, usando rotación en lugar de tracción de la espalda.",
+        key: "remoMancuerna"
+    },
+    pullOver: {
+        nc: "Pull-over con Mancuerna",
+        tm: "Extensión de Hombro",
+        mp: ["Dorsal Ancho", "Pectoral Mayor", "Serrato Anterior"],
+        ms: ["Tríceps (cabeza larga)", "Redondo Mayor"],
+        ab: "Ejercicio único que trabaja los antagonistas pecho y espalda simultáneamente. Clásico para la expansión de la caja torácica (aunque su efecto es debatido).",
+        pct: "Mantén los brazos con una ligera flexión. El movimiento debe originarse en la articulación del hombro, no del codo. Inspira profundamente en la bajada.",
+        rc: "Flexionar los codos en la bajada (convirtiéndolo en un press francés) o bajar el peso más allá de la flexibilidad del hombro.",
+        key: "pullOver"
+    },
+    
+    // ==========================================================
+    // GRUPO 3: HOMBROS
+    // Fuente: Enciclopedia de Musculación, Óscar Morán, pp. 104-157
+    // ==========================================================
+    
+    pressMilitarBarra: {
+        nc: "Press Militar de Pie con Barra",
+        tm: "Empuje Vertical",
+        mp: ["Deltoides (Anterior y Medial)"],
+        ms: ["Tríceps Braquial", "Trapecio", "Core"],
+        ab: "Constructor de hombros y fuerza de empuje vertical por excelencia. Aplica carga axial directa a todo el cuerpo, requiriendo estabilización masiva.",
+        pct: "Contrae glúteos y abdomen para crear una base sólida y estable. La barra debe pasar por delante de la cara y terminar sobre la cabeza.",
+        rc: "Arquear la espalda excesivamente o usar impulso de las piernas para levantar más peso ('cheating').",
+        key: "pressMilitarBarra"
+    },
+    elevacionesLaterales: {
+        nc: "Elevaciones Laterales con Mancuernas",
+        tm: "Abducción de Hombro",
+        mp: ["Deltoides Medial"],
+        ms: ["Deltoides Anterior", "Supraespinoso", "Trapecio (superior)"],
+        ab: "El principal ejercicio de aislamiento para desarrollar la amplitud de los hombros, creando la ilusión de una cintura más estrecha.",
+        pct: "Lidera el movimiento con los codos, no con las manos. Imagina que empujas las paredes a tus lados. No subas más allá de la altura de los hombros.",
+        rc: "Usar demasiado peso y balancear el cuerpo, convirtiendo el movimiento en un ejercicio de trapecio y momentum, no de deltoides.",
+        key: "elevacionesLaterales"
+    },
+    pajaros: {
+        nc: "Elevaciones Posteriores / Pájaros",
+        tm: "Abducción Horizontal de Hombro",
+        mp: ["Deltoides Posterior"],
+        ms: ["Romboides", "Trapecio (medio)"],
+        ab: "Fundamental para la salud del hombro y una apariencia tridimensional, ya que trabaja la a menudo olvidada cabeza posterior del deltoides.",
+        pct: "Mantén el torso inclinado y paralelo al suelo. Abre los brazos en un arco amplio, concentrándote en juntar los omóplatos.",
+        rc: "Subir el torso y usar la espalda baja para mover el peso, en lugar de aislar los deltoides posteriores.",
+        key: "pajaros"
+    },
+
+    // ==========================================================
+    // GRUPO 7: PIERNAS
+    // Fuente: Enciclopedia de Musculación, Óscar Morán, pp. 218-271
+    // ==========================================================
+    
+    sentadillaTrasera: {
+        nc: "Sentadilla Trasera con Barra",
+        tm: "Sentadilla (Squat)",
+        mp: ["Cuádriceps", "Glúteos"],
+        ms: ["Isquiotibiales", "Aductores", "Erectores espinales"],
+        ab: "Considerado por muchos como el rey de todos los ejercicios. Estimula el crecimiento en todo el cuerpo por su intensa respuesta hormonal y demanda neuromuscular.",
+        pct: "Mantén el pecho erguido y la espalda recta. Rompe el paralelo (la cadera baja por debajo de las rodillas) para una activación completa.",
+        rc: "Valgo de rodilla (rodillas colapsando hacia adentro) o levantar los talones del suelo.",
+        key: "sentadillaTrasera"
+    },
+    zancadas: {
+        nc: "Zancadas (Lunges)",
+        tm: "Zancada (Lunge)",
+        mp: ["Cuádriceps", "Glúteos"],
+        ms: ["Isquiotibiales", "Aductores"],
+        ab: "Ejercicio unilateral que mejora la fuerza, el equilibrio y la estabilidad de la cadera. Trabaja intensamente cada pierna de forma independiente.",
+        pct: "Da un paso lo suficientemente largo para que al bajar, ambas rodillas formen ángulos de 90 grados. Empuja con la pierna delantera para regresar.",
+        rc: "Permitir que la rodilla delantera sobrepase la punta del pie excesivamente o golpear la rodilla trasera contra el suelo.",
+        key: "zancadas"
+    },
+    pesoMuertoRumano: {
+        nc: "Peso Muerto Rumano",
+        tm: "Bisagra de Cadera (Hinge)",
+        mp: ["Isquiotibiales", "Glúteos"],
+        ms: ["Erectores espinales (isométrico)"],
+        ab: "Ejercicio superior para el desarrollo de los isquiotibiales y glúteos. Se enfoca en la fase excéntrica y el estiramiento bajo carga.",
+        pct: "Mantén las rodillas con una flexión muy ligera y la espalda perfectamente recta. El movimiento consiste en empujar la cadera hacia atrás.",
+        rc: "Redondear la espalda o flexionar demasiado las rodillas, convirtiéndolo en una sentadilla o un peso muerto mal ejecutado.",
+        key: "pesoMuertoRumano"
+    },
+    elevacionTalones: {
+        nc: "Elevación de Talones (de pie)",
+        tm: "Flexión Plantar",
+        mp: ["Gastrocnemio (Gemelos)"],
+        ms: ["Sóleo"],
+        ab: "El principal ejercicio para construir masa en los gemelos. Trabaja principalmente el gastrocnemio al realizarse con la pierna extendida.",
+        pct: "Realiza una pausa y una contracción máxima en la parte superior y un estiramiento completo en la parte inferior del movimiento.",
+        rc: "Usar rebotes o un rango de movimiento corto, lo cual minimiza la efectividad del ejercicio.",
+        key: "elevacionTalones"
+    }
+};
+
+// ... (Aquí comienza el resto del código JavaScript de LifeOS, como en la v7.0/v7.1, 
+// sin necesidad de cambiarlo ya que está diseñado para leer esta base de datos)
+    
+    let currentMode = localStorage.getItem(CONFIG.STORAGE_KEY_MODE) || 'standard';
+    let customRoutines = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_CUSTOM_ROUTINE)) || {};
+    let editorSelectedDay = new Date().toLocaleDateString('en-US', {weekday: 'long'});
+
+    const mainContent = document.getElementById('main-content');
+    const routineEditor = document.getElementById('routine-editor');
+    
+    function switchMode(mode) { currentMode = mode; localStorage.setItem(CONFIG.STORAGE_KEY_MODE, mode); renderApp(); }
+
+    function renderApp() {
+        document.getElementById('btn-standard-mode').classList.toggle('active', currentMode === 'standard');
+        document.getElementById('btn-custom-mode').classList.toggle('active', currentMode === 'custom');
+        routineEditor.style.display = 'none';
         
-        streakData.count = (streakData.lastDate === yesterdayStr) ? streakData.count + 1 : 1;
-        streakData.lastDate = todayStr;
-        localStorage.setItem(CONFIG.STORAGE_KEY_STREAK, JSON.stringify(streakData));
-        document.getElementById('streak-counter').textContent = streakData.count;
+        if (currentMode === 'standard') { renderStandardDashboard(); } else { renderCustomDashboard(); }
+    }
+
+    function renderStandardDashboard() {
+        mainContent.innerHTML = `<h2 class="section-title">Modo Estándar</h2><p>El plan de élite predefinido se cargaría aquí. Actualmente, el foco de esta versión está en el modo personalizado.</p>`;
     }
     
-    function generateFeedback(dateStr) {
-        const allData = getData();
-        const dayData = allData[dateStr] || {};
-        const notes = dayData.notes || "";
-        let feedback = [];
-        
-        if (/dormí mal|cansado|fatiga/i.test(notes)) feedback.push(`Análisis de Recuperación: Detectada fatiga. El sueño es anabólico. Si esto persiste, considera un día de descanso extra. El crecimiento ocurre durante el descanso.`);
-        else if (/fuerte|energía|bien/i.test(notes)) feedback.push(`Análisis de Estado: Reportas alta energía. Excelente. Tu sistema está preparado para la sobrecarga progresiva. ¡Ataca!`);
-        
-        const dayName = new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long' });
-        const protocol = WEEKLY_PROTOCOLS[dayName];
-        if (protocol && protocol.e) {
-            protocol.e.forEach((ex, i) => {
-                let currentVolume = 0;
-                for (let s = 1; s <= ex.s; s++) { const { weight, reps } = parseLog(dayData[`ex${i}-log-set${s}`]); currentVolume += weight * reps; }
-                
-                const prevWeekDateStr = toISODateString(new Date(new Date(dateStr).getTime() - 7 * 24 * 60 * 60 * 1000));
-                const prevWeekData = allData[prevWeekDateStr] || {};
-                let previousVolume = 0;
-                for (let s = 1; s <= ex.s; s++) { const { weight, reps } = parseLog(prevWeekData[`ex${i}-log-set${s}`]); previousVolume += weight * reps; }
+    function renderCustomDashboard() {
+        let content = `<div id="custom-mode-content"><div style="display:flex;justify-content:space-between;align-items:center;"><h2>Mi Rutina Personalizada</h2><button id="edit-routine-btn" class="action-button">Construir / Editar</button></div>`;
+        const todayName = new Date().toLocaleDateString('en-US', {weekday:'long'});
+        const routineDay = customRoutines[todayName];
 
-                if (currentVolume > 0 && currentVolume > previousVolume) {
-                    const increase = previousVolume > 0 ? Math.round(((currentVolume - previousVolume) / previousVolume) * 100) : 100;
-                    feedback.push(`Análisis de Volumen (${ex.n}): <span style="color:var(--accent-green)">¡Progreso! (+${increase}%)</span> Este es el motor del crecimiento.`);
-                }
-            });
-        }
-        
-        const feedbackEl = document.getElementById('feedback-content');
-        if (feedbackEl) feedbackEl.innerHTML = feedback.length > 0 ? `<ul>${feedback.map(f => `<li>${f}</li>`).join('')}</ul>` : "Introduce logs y notas para activar el análisis del Asesor...";
-    }
-
-    function renderWeekNavigator(centerDate) {
-        const daySelector = document.getElementById('day-selector');
-        daySelector.innerHTML = '';
-        const startOfWeek = new Date(centerDate);
-        startOfWeek.setDate(centerDate.getDate() - centerDate.getDay()); // Sunday start
-        
-        const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-        document.getElementById('week-range').textContent = `Semana del ${startOfWeek.getDate()} de ${monthNames[startOfWeek.getMonth()]}`;
-
-        const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-        for (let i = 0; i < 7; i++) {
-            const day = new Date(startOfWeek);
-            day.setDate(startOfWeek.getDate() + i);
-            const button = document.createElement('button');
-            button.dataset.date = toISODateString(day);
-            button.innerHTML = `${days[i]} <br> <span class="day-date">${day.getDate()}</span>`;
-            if(toISODateString(day) === toISODateString(selectedDate)) button.classList.add('active');
-            if(toISODateString(day) === toISODateString(REAL_TODAY)) button.classList.add('today');
-            daySelector.appendChild(button);
-        }
-    }
-    
-    function displayDay(date) {
-        selectedDate = date;
-        const dateStr = toISODateString(date);
-        const dayName = new Date(date).toLocaleDateString('en-US', {weekday: 'long'});
-        const protocol = WEEKLY_PROTOCOLS[dayName];
-        
-        dashboard.innerHTML = `<div class="daily-signal">${protocol.s}</div><div id="protocol-container"></div>
-            <div id="feedback-wrapper" style="display:none;"><h2 class="section-title">REGISTRO Y ANÁLISIS DIARIO</h2>
-            <textarea id="daily-notes" placeholder="Notas: sensaciones, energía, sueño (1-10), etc..."></textarea>
-            <div id="feedback-section"><h3 id="feedback-title">ASESOR FISIOLÓGICO</h3><div id="feedback-content"></div></div></div>`;
-        
-        const protocolContainer = document.getElementById('protocol-container');
-        const allData = getData();
-        const dayData = allData[dateStr] || {};
-        
-        if (protocol.tsks) {
-            let taskHTML = '<ul class="protocol-list">';
-            protocol.tsks.forEach((task, i) => { const id = `task${i}`; taskHTML += `<li><input type="checkbox" data-id="${id}" ${dayData[id]?'checked':''}> <p>${task}</p></li>`; });
-            protocolContainer.innerHTML = taskHTML + '</ul>';
-        }
-
-        if (protocol.e) {
-            document.getElementById('feedback-wrapper').style.display = 'block';
-            const prevWeekDateStr = toISODateString(new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000));
-            const prevWeekData = allData[prevWeekDateStr] || {};
-            
-            protocol.e.forEach((ex, i) => {
-                const prevLog = prevWeekData[`ex${i}-log-set1`] || "Sin datos previos.";
-                let logInputsHTML = '';
-                for (let s = 1; s <= ex.s; s++) { logInputsHTML += `<input type="text" placeholder="Set ${s}: peso x reps" data-id="ex${i}-log-set${s}"><input type="text" placeholder="RIR" data-id="ex${i}-log-rir${s}" style="width: 80px;">`; }
-                
-                const card = document.createElement('div'); card.className = 'exercise-card';
-                card.innerHTML = `<div class="exercise-header"><span class="exercise-name">${ex.n}</span><span class="info-button" data-term="${ex.t||''}" style="display:${ex.t?'inline-block':'none'};">i</span></div>
-                    <div class="exercise-details"><span>SETS: ${ex.s}</span><span>REPS: ${ex.r}</span><span>REST: ${ex.rest||'N/A'}</span></div><div class="exercise-method">${ex.m}</div>
-                    <div class="previous-log">Semana Anterior: ${prevLog}</div><div class="input-log-area">${logInputsHTML}</div>`;
-                protocolContainer.appendChild(card);
-            });
-            document.getElementById('daily-notes').dataset.id = 'notes';
-        }
-
-        document.querySelectorAll(`[data-id]`).forEach(el => { if (dayData[el.dataset.id] !== undefined) { el.type === 'checkbox' ? el.checked = dayData[el.dataset.id] : el.value = dayData[el.dataset.id]; }});
-        if(document.getElementById('feedback-wrapper')) generateFeedback(dateStr);
-        renderWeekNavigator(currentDateInView);
-    }
-    
-    function saveDataHandler(event) {
-        const allData = getData();
-        const dateStr = toISODateString(selectedDate);
-        if (!allData[dateStr]) allData[dateStr] = {};
-        
-        const id = event.target.dataset.id;
-        if(id) {
-            allData[dateStr][id] = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-            saveData(allData);
-            if(document.getElementById('feedback-wrapper')) generateFeedback(dateStr);
-            if (id === 'notes' && event.target.value.trim() !== '' && dateStr === toISODateString(REAL_TODAY)) updateStreak();
-        }
-    }
-    
-    function init() {
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('current-date-header').textContent = REAL_TODAY.toLocaleDateString('es-ES', dateOptions);
-        document.getElementById('streak-counter').textContent = (JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY_STREAK)) || { count: 0 }).count;
-
-        displayDay(selectedDate);
-        
-        document.getElementById('day-selector').addEventListener('click', e => { const btn = e.target.closest('button'); if(btn && btn.dataset.date) displayDay(new Date(btn.dataset.date + 'T00:00:00')); });
-        document.getElementById('prev-week').addEventListener('click', () => { currentDateInView.setDate(currentDateInView.getDate() - 7); renderWeekNavigator(currentDateInView); });
-        document.getElementById('next-week').addEventListener('click', () => { currentDateInView.setDate(currentDateInView.getDate() + 7); renderWeekNavigator(currentDateInView); });
-        document.getElementById('go-to-today').addEventListener('click', () => { currentDateInView = new Date(REAL_TODAY); displayDay(currentDateInView); });
-        dashboard.addEventListener('input', saveDataHandler);
-
-        const modal = document.getElementById('info-modal');
-        modal.addEventListener('click', e => { if (e.target.id === 'info-modal' || e.target.classList.contains('close-button')) modal.style.display = 'none'; });
-        dashboard.addEventListener('click', e => { if (e.target.classList.contains('info-button')) { const data = KNOWLEDGE_BASE[e.target.dataset.term]; if(data){ modal.querySelector('.modal-title').textContent = data.t; modal.querySelector('#modal-text').textContent = data.txt; modal.style.display="block"; } } });
-    }
-    
-    init();
-});
-</script>
-</body>
-</html>
+        if (routineDay && routineDay.exercises && routineDay.exercises.length > 0) {
+            content += `<h3 class="section-title">Entrenamiento de Hoy: ${todayName}</h3>`;
+            routineDay.exercises.forEach((ex, exIndex) => {
+                const exData = BIOMECH_DB[ex.key];
+                if (!exData) return;
+                let logSeriesHTML = '<div class="log-series-container">';
+                for (let i = 1; i <= ex.sets; i++) { logSeriesHTML += `<div class="log-series" data-ex-key="${ex.key}" data-set-index="${i}"><label class="series-number">${i}</label><div class="slider-group"><input type="range" class="weight-slider" min="0" max="200" step="1.25" value="0"></div><span class="slider-value weight-value">0.00 kg</span><div class="slider-group"><input type="range" class="reps-slider" min="1" max="30" step="1" value="1"></div><span class="slider-value reps-value">1 rep</span></div>`; }
+                logSeriesHTML += '</div>';
+                content += `<div class="exercise-card"><div class="exercise-header"><span class="exercise-name">${exData.nc}</span></div><div class="biomech-feedback"><p><strong>Tipo:</strong> ${exData.tm} | <strong>Primarios:</strong> ${exData.mp.join(', ')}</p><p><strong>Clave Técnica:</strong> ${exData.pct}</p><p style="color:var(--accent-red);"><strong>Evitar:</strong> ${exData.rc}</p></div>${logSeriesHTML}</div>`
