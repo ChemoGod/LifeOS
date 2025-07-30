@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeOS v16.0 - Modular Architecture</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;700&display=swap');
+        :root {
+            --bg-primary: #10121A; --bg-secondary: #1A1C26; --bg-card: #232634;
+            --text-primary: #E2E8F0; --text-secondary: #94A3B8; --text-title: #FFFFFF;
+            --accent-primary: #8257E5; --accent-secondary: #33C6AB; --accent-danger: #F75A68;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --font-main: 'Inter', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-main); background: var(--bg-primary); color: var(--text-primary); padding: 20px; font-weight: 400; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* Estilos generales (como en versiones anteriores) */
+        header { text-align: center; margin-bottom: 2rem; }
+        header h1 { font-size: 2.5rem; font-weight: 800; color: var(--text-title); }
+        header h1 span { color: var(--accent-primary); }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem; }
+        .card-title { font-size: 1.5rem; font-weight: 700; color: var(--text-title); }
+        .action-button { font-weight: 600; background: var(--accent-primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s ease; }
+        .action-button:hover { transform: scale(1.05); }
+
+        /* Estilos específicos de componentes (se repiten aquí por autocontención) */
+        .exercise-item { background-color: var(--bg-secondary); padding: 1rem; border-radius: 10px; margin-top: 1rem; border: 1px solid var(--border-color); }
+        .exercise-item summary { font-size: 1.2rem; font-weight: 600; color: var(--text-title); cursor: pointer; list-style: none; }
+        .exercise-item summary::-webkit-details-marker { display: none; }
+        .biomech-feedback { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-secondary); }
+        .biomech-feedback strong { color: var(--accent-primary); }
+        .biomech-feedback span.danger { color: var(--accent-danger); font-style: italic; }
+        
+        /* Modal Editor Styles */
+        #editor-modal { display: none; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7); z-index: 1000; display: grid; place-items: center; backdrop-filter: blur(5px); }
+        .modal-content { width: 90%; max-width: 600px; background-color: var(--bg-secondary); border-radius: 12px; padding: 2rem; border: 1px solid var(--border-color); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 1.5rem; font-weight: 700; color: var(--text-title); }
+        .close-btn { background: none; border: none; color: var(--text-secondary); font-size: 2rem; cursor: pointer; }
+        #editor-day-selector { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+        .editor-day-btn { background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+        .editor-day-btn.active { background-color: var(--accent-primary); color: var(--text-title); }
+        #exercise-search-input { width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 1rem; margin-top: 1rem; }
+        #suggestions-box { max-height: 150px; overflow-y: auto; }
+        .suggestion-item { padding: 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); }
+        .suggestion-item:hover { background-color: var(--bg-card); }
+        .custom-exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background-color: var(--bg-card); border-radius: 8px; margin-top: 0.5rem; }
+        .delete-exercise-btn { color: var(--accent-danger); cursor: pointer; border: none; background: none; font-size: 1.5rem; }
+
+    </style>
+</head>
+<body>
+
+    <div id="app" class="container">
+        <!-- 
+            ESTA ES LA CARCASA DE LA APLICACIÓN.
+            Todo el contenido dinámico (header, dashboard, editor)
+            será generado y controlado por el script app.js
+        -->
+    </div>
+    
+    <!-- 
+        CARGA DE SCRIPTS
+        El orden es CRUCIAL:
+        1. database.js: Primero cargamos el conocimiento (la enciclopedia).
+        2. app.js: Después cargamos el cerebro que usará ese conocimiento.
+    -->
+    <script src="js/database.js"></script>
+    <script src="js/app.js"></script>
+    
+</body>
+</html>
